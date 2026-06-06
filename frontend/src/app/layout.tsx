@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import RadioPlayer from "../components/RadioPlayer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,9 @@ export default function RootLayout({
 
   const hasAndroidLink = androidUrl && (androidUrl.startsWith("http://") || androidUrl.startsWith("https://"));
   const hasIosLink = iosUrl && (iosUrl.startsWith("http://") || iosUrl.startsWith("https://"));
+
+  const radioStreamUrl = process.env.NEXT_PUBLIC_RADIO_STREAM_URL || "";
+  const hasRadioStream = radioStreamUrl && (radioStreamUrl.startsWith("http://") || radioStreamUrl.startsWith("https://"));
 
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
@@ -80,6 +84,7 @@ export default function RootLayout({
         <footer className="bg-white border-t border-gray-100 mt-12 py-6 text-center text-sm text-gray-400">
           <p>© {new Date().getFullYear()} {blogTitle}. All rights reserved.</p>
         </footer>
+        {hasRadioStream && <RadioPlayer streamUrl={radioStreamUrl} />}
       </body>
     </html>
   );

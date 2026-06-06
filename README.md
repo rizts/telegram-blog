@@ -45,6 +45,7 @@ Copy the `frontend/.env.example` file to `frontend/.env` and configure the follo
 * `NEXT_PUBLIC_ADMIN_SECRET`: The secret string matching backend's `ADMIN_SECRET` to authorize administrative UI actions (e.g., toggling sticky posts).
 * `NEXT_PUBLIC_DOWNLOAD_ANDROID_URL`: Optional download URL for the Android companion app (only displayed in layout if it is a valid HTTP/HTTPS URL).
 * `NEXT_PUBLIC_DOWNLOAD_IOS_URL`: Optional download URL for the iOS companion app (only displayed in layout if it is a valid HTTP/HTTPS URL).
+* `NEXT_PUBLIC_RADIO_STREAM_URL`: Optional streaming URL for the online radio widget (only displayed on the website if it is a valid HTTP/HTTPS URL).
 
 ---
 
