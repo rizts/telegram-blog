@@ -10,6 +10,16 @@ This project is divided into two main layers:
 
 ---
 
+## Key Features
+
+- **Real-time Synchronization**: Automatically imports new Telegram Channel posts into the blog database.
+- **Forward-based Backfilling (Lockable)**: Enables importing of historical posts by forwarding them to the bot's private chat. This feature can be locked via env to prevent spam.
+- **Token Authentication**: Critical administrative actions (such as pinning/unpinning posts) are secured using an `ADMIN_SECRET` Bearer token.
+- **Dynamic Branding**: Completely customizable metadata, title, and header subtitle via environment variables for easy white-labeling.
+- **On-Demand ISR Revalidation**: Built-in API route (`/api/revalidate`) allowing caching systems or webhook triggers to update static pages on demand.
+
+---
+
 ## Environment Variables (`.env`)
 
 > [!IMPORTANT]
@@ -19,14 +29,20 @@ This project is divided into two main layers:
 Copy the `backend/.env.example` file to `backend/.env` and configure the following variables:
 * `BOT_TOKEN`: Your Telegram bot token obtained from [@BotFather](https://t.me/BotFather).
 * `CHANNEL_USERNAME`: The username of your public Telegram channel (e.g., `@yourchannel`).
-* `DATABASE_URL`: Your PostgreSQL database connection URI from Neon.tech.
+* `DATABASE_URL`: Your PostgreSQL database connection URI (e.g., from Neon.tech).
 * `PORT`: The Fastify server port (default: `3001`).
 * `FRONTEND_URL`: The frontend application URL, used for CORS configuration.
 * `NODE_ENV`: The environment mode (`development`, `production`, or `test`).
+* `ALLOW_FORWARD_SYNC`: Set to `true` to allow manual import of historical posts by forwarding messages to the bot's private chat. Set to `false` in production to prevent spam. Note: Auto-saving of new channel posts is disabled while this flag is `true`.
+* `ADMIN_SECRET`: A secret string used to protect admin endpoints (e.g., toggling sticky posts).
 
 ### 2. Frontend (`frontend/.env`)
 Copy the `frontend/.env.example` file to `frontend/.env` and configure the following variables:
 * `NEXT_PUBLIC_API_URL`: The backend API URL (default: `http://localhost:3001`).
+* `NEXT_PUBLIC_BLOG_TITLE`: Custom title for the blog layout.
+* `NEXT_PUBLIC_BLOG_DESCRIPTION`: Custom meta description for SEO.
+* `NEXT_PUBLIC_BLOG_SUBTITLE`: Custom header subtitle.
+* `NEXT_PUBLIC_ADMIN_SECRET`: The secret string matching backend's `ADMIN_SECRET` to authorize administrative UI actions (e.g., toggling sticky posts).
 
 ---
 
