@@ -22,8 +22,11 @@ export async function syncAllPosts(channelId: string): Promise<number> {
 
   await bot.startPolling();
 
-  // 1. Listen for new channel posts
+  // 1. Listen for new channel posts (Auto-save)
   bot.on('channel_post', async (msg) => {
+    const allowForwardSync = process.env.ALLOW_FORWARD_SYNC === 'true';
+    if (allowForwardSync) return;
+
     if (msg.chat.username !== channelId.replace('@', '')) return;
     const parsed = parseMessage(msg, channelId);
     await upsertPost(parsed);
