@@ -17,6 +17,8 @@ This project is divided into two main layers:
 - **Token Authentication**: Critical administrative actions (such as pinning/unpinning posts) are secured using an `ADMIN_SECRET` Bearer token.
 - **Dynamic Branding**: Completely customizable metadata, title, and header subtitle via environment variables for easy white-labeling.
 - **On-Demand ISR Revalidation**: Built-in API route (`/api/revalidate`) allowing caching systems or webhook triggers to update static pages on demand.
+- **App Download Links**: Conditionally renders header links with brand SVGs for Android and iOS apps when valid URLs are supplied.
+- **Online Radio Player Widget**: Interactive, floating HTML5 streaming player featuring volume control and a live indicator, visible when a stream URL is configured.
 
 ---
 
