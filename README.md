@@ -43,6 +43,7 @@ Copy the `frontend/.env.example` file to `frontend/.env` and configure the follo
 * `NEXT_PUBLIC_BLOG_DESCRIPTION`: Custom meta description for SEO.
 * `NEXT_PUBLIC_BLOG_SUBTITLE`: Custom header subtitle.
 * `NEXT_PUBLIC_ADMIN_SECRET`: The secret string matching backend's `ADMIN_SECRET` to authorize administrative UI actions (e.g., toggling sticky posts).
+* `NEXT_PUBLIC_RADIO_APP_URL`: Optional download URL for the companion radio app (only displayed in layout if it is a valid HTTP/HTTPS URL).
 
 ---
 
