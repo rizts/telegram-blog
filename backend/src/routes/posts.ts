@@ -78,6 +78,14 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
           },
         },
       },
+      preHandler: async (request, reply) => {
+        const authHeader = request.headers.authorization;
+        const expectedSecret = process.env.ADMIN_SECRET || 'default-admin-secret';
+        if (!authHeader || authHeader !== `Bearer ${expectedSecret}`) {
+          reply.status(401);
+          throw new Error('Unauthorized');
+        }
+      },
     },
     async (request, reply) => {
       const id = parseInt(request.params.id);

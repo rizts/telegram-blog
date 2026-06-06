@@ -34,7 +34,10 @@ export function useStickyToggle() {
     try {
       const res = await fetch(`${API_URL}/posts/${postId}/sticky`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_ADMIN_SECRET || 'default-admin-secret'}`
+        },
         body: JSON.stringify({ isSticky }),
       });
       if (!res.ok) throw new Error('Gagal update sticky status');

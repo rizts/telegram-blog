@@ -93,6 +93,7 @@ describe('PATCH /posts/:id/sticky', () => {
     const res = await app.inject({
       method: 'PATCH',
       url: '/posts/1/sticky',
+      headers: { authorization: 'Bearer default-admin-secret' },
       payload: { isSticky: false },
     });
     expect(res.statusCode).toBe(200);
@@ -100,10 +101,20 @@ describe('PATCH /posts/:id/sticky', () => {
     expect(body.isSticky).toBe(false);
   });
 
+  it('returns 401 for unauthorized PATCH request', async () => {
+    const res = await app.inject({
+      method: 'PATCH',
+      url: '/posts/1/sticky',
+      payload: { isSticky: false },
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
   it('returns 400 when body is missing isSticky field', async () => {
     const res = await app.inject({
       method: 'PATCH',
       url: '/posts/1/sticky',
+      headers: { authorization: 'Bearer default-admin-secret' },
       payload: {},
     });
     expect(res.statusCode).toBe(400);
@@ -115,6 +126,7 @@ describe('PATCH /posts/:id/sticky', () => {
     const res = await app.inject({
       method: 'PATCH',
       url: '/posts/99999/sticky',
+      headers: { authorization: 'Bearer default-admin-secret' },
       payload: { isSticky: true },
     });
     expect(res.statusCode).toBe(404);
