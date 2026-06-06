@@ -32,6 +32,9 @@ export async function syncAllPosts(channelId: string): Promise<number> {
 
   // 2. Listen for messages forwarded to the bot's private chat (for history backfilling)
   bot.on('message', async (msg) => {
+    const allowForwardSync = process.env.ALLOW_FORWARD_SYNC === 'true';
+    if (!allowForwardSync) return;
+
     const targetUsername = channelId.replace('@', '');
     if (msg.forward_from_chat && msg.forward_from_chat.username === targetUsername) {
       const parsed = parseMessage(msg, channelId);
