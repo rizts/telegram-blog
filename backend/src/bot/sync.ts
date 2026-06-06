@@ -22,6 +22,7 @@ export async function syncAllPosts(channelId: string): Promise<number> {
 
   await bot.startPolling();
 
+  // 1. Listen for new channel posts
   bot.on('channel_post', async (msg) => {
     if (msg.chat.username !== channelId.replace('@', '')) return;
     const parsed = parseMessage(msg, channelId);
@@ -29,7 +30,16 @@ export async function syncAllPosts(channelId: string): Promise<number> {
     synced++;
   });
 
-  // Polling berjalan sebagai background process
+  // 2. Listen for messages forwarded to the bot's private chat (for history backfilling)
+  bot.on('message', async (msg) => {
+    const targetUsername = channelId.replace('@', '');
+    if (msg.forward_from_chat && msg.forward_from_chat.username === targetUsername) {
+      const parsed = parseMessage(msg, channelId);
+      await upsertPost(parsed);
+      synced++;
+    }
+  });
+
   return synced;
 }
 

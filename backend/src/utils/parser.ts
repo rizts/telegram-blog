@@ -18,12 +18,12 @@ export function parseMessage(msg: Message, channelUsername: string): NewPost {
   }
 
   return {
-    telegramMessageId: msg.message_id,
+    telegramMessageId: msg.forward_from_message_id ?? msg.message_id,
     channelUsername: channelUsername.replace('@', ''),
     content: msg.text ?? msg.caption ?? null,
     mediaUrl,
     mediaType,
     forwardedFrom: msg.forward_from_chat?.title ?? null,
-    publishedAt: new Date(msg.date * 1000),
+    publishedAt: msg.forward_date ? new Date(msg.forward_date * 1000) : new Date(msg.date * 1000),
   };
 }
