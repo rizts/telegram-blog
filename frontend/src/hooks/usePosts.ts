@@ -23,7 +23,7 @@ export function usePosts(page = 1, limit = 10) {
   return { data, loading, error };
 }
 
-// Hook untuk toggle sticky status sebuah post
+// Hook to toggle sticky status of a post
 export function useStickyToggle() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

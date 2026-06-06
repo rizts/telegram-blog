@@ -5,7 +5,7 @@ import { eq, desc, sql, and } from 'drizzle-orm';
 
 const postsRoutes: FastifyPluginAsync = async (fastify) => {
   // GET /posts?page=1&limit=10
-  // Mengembalikan sticky posts (semua, tanpa paginasi) + regular posts (dengan paginasi)
+  // Returns all sticky posts (unpaginated) + regular posts (paginated)
   fastify.get<{ Querystring: { page?: string; limit?: string } }>('/', async (request, reply) => {
     const page = Math.max(1, parseInt(request.query.page ?? '1'));
     const limit = Math.min(50, parseInt(request.query.limit ?? '10'));
@@ -14,14 +14,14 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
     const notDeleted = eq(posts.isDeleted, false);
 
     const [stickyData, regularData, countResult] = await Promise.all([
-      // Sticky posts — selalu tampil semua, diurutkan terbaru
+      // Sticky posts — all are displayed, sorted by newest
       db
         .select()
         .from(posts)
         .where(and(notDeleted, eq(posts.isSticky, true)))
         .orderBy(desc(posts.publishedAt)),
 
-      // Regular posts — dengan paginasi, exclude yang sticky
+      // Regular posts — paginated, excluding sticky posts
       db
         .select()
         .from(posts)
@@ -30,7 +30,7 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
         .limit(limit)
         .offset(offset),
 
-      // Hitung total regular posts untuk paginasi
+      // Count total regular posts for pagination
       db
         .select({ count: sql<number>`count(*)` })
         .from(posts)
@@ -65,7 +65,7 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
     return post[0];
   });
 
-  // PATCH /posts/:id/sticky — toggle status sticky sebuah post
+  // PATCH /posts/:id/sticky — toggle sticky status of a post
   fastify.patch<{ Params: { id: string }; Body: { isSticky: boolean } }>(
     '/:id/sticky',
     {

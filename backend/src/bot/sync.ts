@@ -7,14 +7,14 @@ import { and, eq, not } from 'drizzle-orm';
 const bot = new TelegramBot(process.env.BOT_TOKEN!, { polling: false });
 
 /**
- * Sync seluruh history channel dari awal.
- * Telegram Bot API tidak mendukung getHistory langsung,
- * workaround: forward semua pesan ke bot private untuk capture,
- * atau gunakan offset-based forwardMessages.
+ * Sync all channel history from the beginning.
+ * The Telegram Bot API does not support direct getHistory,
+ * workaround: forward all messages to the bot's private chat to capture them,
+ * or use offset-based forwardMessages.
  *
- * Pendekatan yang digunakan: fetch via getChatHistory menggunakan
- * MTProto-compatible offset. Untuk Bot API standar, kita simpan
- * offset dari polling dan lakukan initial sync via webhook replay.
+ * Approach used: fetch via getChatHistory using
+ * MTProto-compatible offset. For the standard Bot API, we store
+ * the offset from polling and perform an initial sync via webhook replay.
  */
 export async function syncAllPosts(channelId: string): Promise<number> {
   let synced = 0;
