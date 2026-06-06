@@ -13,8 +13,9 @@ This project is divided into two main layers:
 ## Key Features
 
 - **Real-time Synchronization**: Automatically imports new Telegram Channel posts into the blog database.
+- **Telegram-Native Sticky & Deletion Sync**: Automatically syncs pinned channel posts to the blog's hero/pinned section and soft-deletes posts from the blog when they are deleted from the Telegram channel.
 - **Forward-based Backfilling (Lockable)**: Enables importing of historical posts by forwarding them to the bot's private chat. This feature can be locked via env to prevent spam.
-- **Token Authentication**: Critical administrative actions (such as pinning/unpinning posts) are secured using an `ADMIN_SECRET` Bearer token.
+- **Token Authentication**: Critical administrative actions (such as manual pinning/unpinning posts) are secured using an `ADMIN_SECRET` Bearer token.
 - **Dynamic Branding**: Completely customizable metadata, title, and header subtitle via environment variables for easy white-labeling.
 - **On-Demand ISR Revalidation**: Built-in API route (`/api/revalidate`) allowing caching systems or webhook triggers to update static pages on demand.
 - **App Download Links**: Conditionally renders header links with brand SVGs for Android and iOS apps when valid URLs are supplied.
