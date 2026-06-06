@@ -45,3 +45,34 @@ npm run test
 cd frontend
 npm run test
 ```
+
+---
+
+## Contributing
+
+Contributions are welcome! Please follow these steps to contribute:
+
+1. **Fork the Repository**: Create a fork of this repository on GitHub.
+2. **Clone the Fork**: Clone the fork to your local machine.
+3. **Create a Branch**: Create a new branch for your feature or bug fix:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+4. **Make Changes**: Implement your changes and ensure all unit tests pass:
+   ```bash
+   npm --prefix backend run test
+   npm --prefix frontend run test
+   ```
+5. **Commit & Push**: Commit your changes and push them to your fork:
+   ```bash
+   git add .
+   git commit -m "feat(scope): describe your changes"
+   git push origin feature/your-feature-name
+   ```
+6. **Open a Pull Request**: Submit a Pull Request explaining your changes.
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
