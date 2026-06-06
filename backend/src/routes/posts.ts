@@ -54,7 +54,7 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
     const post = await db
       .select()
       .from(posts)
-      .where(eq(posts.id, parseInt(request.params.id)))
+      .where(and(eq(posts.id, parseInt(request.params.id)), eq(posts.isDeleted, false)))
       .limit(1);
 
     if (!post.length) {
