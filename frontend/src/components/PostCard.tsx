@@ -1,6 +1,7 @@
 'use client';
 
 import type { Post } from '../types/post';
+import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface Props {
   post: Post;
@@ -137,22 +138,7 @@ export function PostCard({ post, variant = 'default' }: Props) {
 
       {/* Content */}
       {post.content && (
-        <p style={{
-          fontSize: '14px',
-          lineHeight: '1.7',
-          color: 'var(--text-primary)',
-          whiteSpace: 'pre-wrap',
-          margin: 0,
-          flex: 1,
-          ...(isSticky ? {} : {
-            display: '-webkit-box',
-            WebkitLineClamp: 4,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-          })
-        }}>
-          {post.content}
-        </p>
+        <MarkdownRenderer content={post.content} isSticky={isSticky} />
       )}
     </article>
   );

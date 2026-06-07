@@ -1,5 +1,6 @@
 import type { Post } from '../../../types/post';
 import Link from 'next/link';
+import { MarkdownRenderer } from '../../../components/MarkdownRenderer';
 import { ViewCounter } from '../../../components/ViewCounter';
 import { notFound } from 'next/navigation';
 
@@ -223,13 +224,7 @@ export default async function PostDetail({ params }: PageProps) {
         {/* Body content */}
         {post.content && (
           <div className="article-body">
-            {post.content.split('\n').map((paragraph, i) =>
-              paragraph.trim() ? (
-                <p key={i}>{paragraph}</p>
-              ) : (
-                <br key={i} />
-              )
-            )}
+            <MarkdownRenderer content={post.content} isSticky={true} />
           </div>
         )}
       </article>
