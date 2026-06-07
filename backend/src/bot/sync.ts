@@ -40,7 +40,15 @@ export async function syncAllPosts(channelId: string): Promise<number> {
       console.error('[sync] Error running post-event check:', e);
     }
   });
+  // 2. Listen for edited channel posts
+  bot.on('edited_channel_post', async (msg) => {
+    const allowForwardSync = process.env.ALLOW_FORWARD_SYNC === 'true';
+    if (allowForwardSync) return;
 
+    if (msg.chat.username !== channelId.replace('@', '')) return;
+    const parsed = parseMessage(msg, channelId);
+    await upsertPost(parsed);
+  });
   // 2. Listen for messages forwarded to the bot's private chat (for history backfilling)
   bot.on('message', async (msg) => {
     const allowForwardSync = process.env.ALLOW_FORWARD_SYNC === 'true';
@@ -147,7 +155,7 @@ async function upsertPost(post: any) {
     .values(post)
     .onConflictDoUpdate({
       target: posts.telegramMessageId,
-      set: { content: post.content, updatedAt: new Date() },
+      set: { content: post.content, tags: post.tags, updatedAt: new Date() },
     });
 }
 
