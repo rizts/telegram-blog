@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import 'dotenv/config';
 import postsRoutes from './routes/posts';
+import channelRoutes from './routes/channel';
 import { syncAllPosts } from './bot/sync';
 
 const fastify = Fastify({ logger: true });
@@ -12,6 +13,7 @@ fastify.register(cors, {
 
 fastify.get('/health', async () => ({ status: 'ok' }));
 fastify.register(postsRoutes, { prefix: '/posts' });
+fastify.register(channelRoutes, { prefix: '/channel' });
 
 const PORT = parseInt(process.env.PORT || '3001');
 

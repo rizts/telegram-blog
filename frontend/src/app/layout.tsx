@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import RadioPlayer from "../components/RadioPlayer";
+import ChannelLogo from "../components/ChannelLogo";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,8 +22,6 @@ export default function RootLayout({
 }>) {
   const blogTitle = process.env.NEXT_PUBLIC_BLOG_TITLE || "Telegram Channel Blog";
   const blogSubtitle = process.env.NEXT_PUBLIC_BLOG_SUBTITLE || "Real-time Sync";
-  const logoUrl = process.env.NEXT_PUBLIC_BLOG_LOGO_URL || "";
-  const hasLogo = logoUrl && (logoUrl.startsWith("http://") || logoUrl.startsWith("https://") || logoUrl.startsWith("/"));
 
   const androidUrl = process.env.NEXT_PUBLIC_DOWNLOAD_ANDROID_URL || "";
   const iosUrl = process.env.NEXT_PUBLIC_DOWNLOAD_IOS_URL || "";
@@ -52,22 +51,7 @@ export default function RootLayout({
           <div className="max-w-5xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
           {/* Brand (logo + title + subtitle) */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
-              {hasLogo && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={logoUrl}
-                  alt={`${blogTitle} logo`}
-                  style={{
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                    border: '2px solid rgba(139, 105, 20, 0.25)',
-                    boxShadow: '0 1px 6px rgba(100, 80, 20, 0.15)',
-                    flexShrink: 0,
-                  }}
-                />
-              )}
+              <ChannelLogo apiUrl={process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"} title={blogTitle} />
               <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                 <h1 className="text-xl font-bold truncate" style={{ color: 'var(--accent-primary)', fontFamily: "'Inter', sans-serif", letterSpacing: '-0.02em' }}>
                   {blogTitle}
