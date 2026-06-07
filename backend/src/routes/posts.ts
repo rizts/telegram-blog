@@ -18,7 +18,7 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
     const searchParam = request.query.search;
 
     const notDeleted = eq(posts.isDeleted, false);
-    const hasContentOrMedia = sql`${posts.content} IS NOT NULL OR ${posts.mediaUrl} IS NOT NULL`;
+    const hasContentOrMedia = sql`(${posts.content} IS NOT NULL OR ${posts.mediaUrl} IS NOT NULL)`;
     const tagFilter = tagParam ? sql`${tagParam} = ANY(${posts.tags})` : sql`TRUE`;
     const searchFilter = searchParam ? sql`${posts.content} ILIKE ${`%${searchParam}%`}` : sql`TRUE`;
     const orderClause = sortParam === 'popular' ? desc(posts.views) : desc(posts.publishedAt);
