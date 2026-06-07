@@ -1,3 +1,5 @@
+'use client';
+
 import type { Post } from '../types/post';
 
 interface Props {
