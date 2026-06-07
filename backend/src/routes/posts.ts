@@ -18,6 +18,7 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
     const searchParam = request.query.search;
 
     const notDeleted = eq(posts.isDeleted, false);
+    const hasContentOrMedia = sql`${posts.content} IS NOT NULL OR ${posts.mediaUrl} IS NOT NULL`;
     const tagFilter = tagParam ? sql`${tagParam} = ANY(${posts.tags})` : sql`TRUE`;
     const searchFilter = searchParam ? sql`${posts.content} ILIKE ${`%${searchParam}%`}` : sql`TRUE`;
     const orderClause = sortParam === 'popular' ? desc(posts.views) : desc(posts.publishedAt);
@@ -27,14 +28,14 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
       db
         .select()
         .from(posts)
-        .where(and(notDeleted, eq(posts.isSticky, true), tagFilter, searchFilter))
+        .where(and(notDeleted, hasContentOrMedia, eq(posts.isSticky, true), tagFilter, searchFilter))
         .orderBy(desc(posts.publishedAt)),
 
       // Regular posts — paginated, excluding sticky posts
       db
         .select()
         .from(posts)
-        .where(and(notDeleted, eq(posts.isSticky, false), tagFilter, searchFilter))
+        .where(and(notDeleted, hasContentOrMedia, eq(posts.isSticky, false), tagFilter, searchFilter))
         .orderBy(orderClause)
         .limit(limit)
         .offset(offset),
@@ -43,7 +44,7 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
       db
         .select({ count: sql<number>`count(*)` })
         .from(posts)
-        .where(and(notDeleted, eq(posts.isSticky, false), tagFilter, searchFilter)),
+        .where(and(notDeleted, hasContentOrMedia, eq(posts.isSticky, false), tagFilter, searchFilter)),
     ]);
 
     return {

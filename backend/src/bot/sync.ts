@@ -44,6 +44,7 @@ export async function syncAllPosts(channelId: string): Promise<number> {
     if (allowForwardSync) return;
 
     const parsed = parseMessage(msg, channelId);
+    if (!parsed.content && !parsed.mediaUrl) return; // Skip empty service messages
     await upsertPost(parsed);
     synced++;
 
@@ -61,6 +62,7 @@ export async function syncAllPosts(channelId: string): Promise<number> {
 
     if (msg.chat.username !== channelId.replace('@', '')) return;
     const parsed = parseMessage(msg, channelId);
+    if (!parsed.content && !parsed.mediaUrl) return;
     await upsertPost(parsed);
   });
   // 2. Listen for messages forwarded to the bot's private chat (for history backfilling)
@@ -71,6 +73,7 @@ export async function syncAllPosts(channelId: string): Promise<number> {
     const targetUsername = channelId.replace('@', '');
     if (msg.forward_from_chat && msg.forward_from_chat.username === targetUsername) {
       const parsed = parseMessage(msg, channelId);
+      if (!parsed.content && !parsed.mediaUrl) return;
       await upsertPost(parsed);
       synced++;
     }
