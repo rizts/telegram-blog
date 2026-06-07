@@ -34,9 +34,21 @@ export default async function Home({ searchParams }: PageProps) {
 
   if (errorMsg || !data) {
     return (
-      <div className="bg-red-50 border border-red-200 text-red-800 rounded-lg p-5 text-center my-8">
-        <h2 className="font-semibold text-lg mb-2">Failed to Load Blog Posts</h2>
-        <p className="text-sm">{errorMsg || 'Database connection could not be established.'}</p>
+      <div style={{
+        background: 'rgba(255, 235, 235, 0.8)',
+        border: '1px solid rgba(220, 150, 150, 0.4)',
+        borderRadius: '14px',
+        padding: '32px',
+        textAlign: 'center',
+        margin: '32px 0',
+      }}>
+        <div style={{ fontSize: '2rem', marginBottom: '12px' }}>⚠️</div>
+        <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#8b2020', marginBottom: '8px' }}>
+          Failed to Load Blog Posts
+        </h2>
+        <p style={{ fontSize: '14px', color: '#a05050' }}>
+          {errorMsg || 'Database connection could not be established.'}
+        </p>
       </div>
     );
   }
@@ -44,25 +56,56 @@ export default async function Home({ searchParams }: PageProps) {
   const { sticky = [], data: regularPosts = [], meta } = data;
 
   return (
-    <div className="space-y-12">
+    <div className="animate-fadeInUp">
       {/* Pinned/Sticky Posts Section */}
       {page === 1 && <StickySection posts={sticky} />}
 
       {/* Regular Posts Section */}
       <section>
-        <div className="flex items-center gap-2 mb-6">
-          <span className="text-sm font-medium text-gray-500">Daftar Posting</span>
-          <div className="flex-grow h-px bg-gray-200" />
+        {/* Section header */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px',
+        }}>
+          <div style={{
+            padding: '5px 14px',
+            borderRadius: '20px',
+            background: 'rgba(139, 105, 20, 0.08)',
+            border: '1px solid rgba(139, 105, 20, 0.15)',
+          }}>
+            <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--accent-primary)' }}>
+              Daftar Posting
+            </span>
+          </div>
+          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, rgba(180, 150, 60, 0.3), transparent)' }} />
+          {meta.total > 0 && (
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 500 }}>
+              {meta.total} artikel
+            </span>
+          )}
         </div>
 
         {regularPosts.length === 0 ? (
-          <div className="text-center py-12 text-gray-400 border border-dashed border-gray-200 rounded-xl">
+          <div style={{
+            textAlign: 'center', padding: '64px 24px',
+            border: '1px dashed rgba(180, 150, 60, 0.3)',
+            borderRadius: '14px', color: 'var(--text-muted)',
+            fontSize: '14px',
+          }}>
+            <div style={{ fontSize: '2rem', marginBottom: '12px', opacity: 0.5 }}>📭</div>
             Belum ada postingan regular.
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+            gap: '16px',
+          }}>
             {regularPosts.map((post) => (
-              <Link key={post.id} href={`/posts/${post.id}`} className="block group">
+              <Link
+                key={post.id}
+                href={`/posts/${post.id}`}
+                style={{ textDecoration: 'none', display: 'block' }}
+              >
                 <PostCard post={post} />
               </Link>
             ))}
@@ -70,35 +113,49 @@ export default async function Home({ searchParams }: PageProps) {
         )}
       </section>
 
-      {/* Pagination Navigation */}
+      {/* Pagination */}
       {meta.totalPages > 1 && (
-        <div className="flex items-center justify-center gap-4 pt-6 border-t border-gray-100">
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          gap: '12px', paddingTop: '36px', marginTop: '36px',
+          borderTop: '1px solid rgba(180, 150, 60, 0.2)',
+        }}>
           {page > 1 ? (
-            <Link
-              href={`/?page=${page - 1}`}
-              className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium hover:border-gray-300 transition-colors"
-            >
+            <Link href={`/?page=${page - 1}`} style={{
+              padding: '8px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 600,
+              textDecoration: 'none', color: 'var(--accent-primary)',
+              background: 'rgba(139, 105, 20, 0.08)', border: '1px solid rgba(139, 105, 20, 0.2)',
+              transition: 'all 0.2s ease',
+            }}>
               ← Sebelumnya
             </Link>
           ) : (
-            <span className="px-4 py-2 border border-gray-100 text-gray-300 rounded-lg text-sm font-medium cursor-not-allowed">
+            <span style={{
+              padding: '8px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 600,
+              color: 'var(--text-muted)', opacity: 0.4, border: '1px solid rgba(180, 150, 60, 0.15)',
+            }}>
               ← Sebelumnya
             </span>
           )}
 
-          <span className="text-sm text-gray-500">
-            Halaman {page} dari {meta.totalPages}
+          <span style={{ fontSize: '12px', color: 'var(--text-muted)', padding: '0 4px' }}>
+            Halaman <strong style={{ color: 'var(--accent-primary)' }}>{page}</strong> dari {meta.totalPages}
           </span>
 
           {page < meta.totalPages ? (
-            <Link
-              href={`/?page=${page + 1}`}
-              className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium hover:border-gray-300 transition-colors"
-            >
+            <Link href={`/?page=${page + 1}`} style={{
+              padding: '8px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 600,
+              textDecoration: 'none', color: 'var(--accent-primary)',
+              background: 'rgba(139, 105, 20, 0.08)', border: '1px solid rgba(139, 105, 20, 0.2)',
+              transition: 'all 0.2s ease',
+            }}>
               Selanjutnya →
             </Link>
           ) : (
-            <span className="px-4 py-2 border border-gray-100 text-gray-300 rounded-lg text-sm font-medium cursor-not-allowed">
+            <span style={{
+              padding: '8px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 600,
+              color: 'var(--text-muted)', opacity: 0.4, border: '1px solid rgba(180, 150, 60, 0.15)',
+            }}>
               Selanjutnya →
             </span>
           )}

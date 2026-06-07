@@ -29,7 +29,7 @@ describe('PostCard', () => {
 
   it('shows photo indicator when mediaType is photo', () => {
     render(<PostCard post={{ ...mockPost, mediaType: 'photo', mediaUrl: 'file123' }} />);
-    expect(screen.getByText(/ada lampiran foto/i)).toBeTruthy();
+    expect(screen.getByText(/photo attachment/i)).toBeTruthy();
   });
 
   it('does not render content when null', () => {
@@ -39,16 +39,16 @@ describe('PostCard', () => {
 
   it('shows sticky badge when isSticky is true', () => {
     render(<PostCard post={{ ...mockPost, isSticky: true }} />);
-    expect(screen.getByText(/sticky/i)).toBeTruthy();
+    expect(screen.getByText(/pinned/i)).toBeTruthy();
   });
 
   it('does not show sticky badge for regular posts', () => {
     render(<PostCard post={mockPost} />);
-    expect(screen.queryByText(/sticky/i)).toBeNull();
+    expect(screen.queryByText(/pinned/i)).toBeNull();
   });
 
   it('shows sticky badge when variant is sticky', () => {
     render(<PostCard post={mockPost} variant="sticky" />);
-    expect(screen.getByText(/sticky/i)).toBeTruthy();
+    expect(screen.getByText(/pinned/i)).toBeTruthy();
   });
 });

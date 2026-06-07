@@ -8,6 +8,96 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+function MediaPreview({ post }: { post: Post }) {
+  if (!post.mediaType || !post.mediaUrl) return null;
+
+  const containerStyle: React.CSSProperties = {
+    borderRadius: '12px',
+    overflow: 'hidden',
+    marginBottom: '24px',
+    border: '1px solid rgba(210, 190, 120, 0.3)',
+  };
+
+  if (post.mediaType === 'photo') {
+    return (
+      <div style={containerStyle}>
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(255, 245, 200, 0.9) 0%, rgba(255, 235, 160, 0.7) 100%)',
+          aspectRatio: '16/9',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '12px',
+          padding: '32px',
+        }}>
+          <span style={{ fontSize: '4rem', filter: 'drop-shadow(0 2px 8px rgba(180,140,20,0.2))' }}>🖼️</span>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--accent-primary)', marginBottom: '4px' }}>
+              Photo Attachment
+            </div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'monospace', wordBreak: 'break-all', maxWidth: '320px' }}>
+              File ID: {post.mediaUrl}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (post.mediaType === 'video') {
+    return (
+      <div style={containerStyle}>
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(40, 30, 10, 0.08) 0%, rgba(80, 60, 20, 0.06) 100%)',
+          aspectRatio: '16/9',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '12px',
+          padding: '32px',
+        }}>
+          <span style={{ fontSize: '4rem', filter: 'drop-shadow(0 2px 8px rgba(100,80,20,0.15))' }}>🎥</span>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--accent-primary)', marginBottom: '4px' }}>
+              Video Attachment
+            </div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'monospace', wordBreak: 'break-all', maxWidth: '320px' }}>
+              File ID: {post.mediaUrl}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (post.mediaType === 'document') {
+    return (
+      <div style={{
+        ...containerStyle,
+        padding: '20px 24px',
+        background: 'rgba(255, 248, 210, 0.6)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '16px',
+      }}>
+        <span style={{ fontSize: '2.5rem', lineHeight: 1 }}>📄</span>
+        <div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--accent-primary)', marginBottom: '4px' }}>
+            Document File
+          </div>
+          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'monospace', wordBreak: 'break-all' }}>
+            File ID: {post.mediaUrl}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
+
 export default async function PostDetail({ params }: PageProps) {
   const resolvedParams = await params;
   const id = resolvedParams.id;
@@ -47,38 +137,75 @@ export default async function PostDetail({ params }: PageProps) {
   });
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <Link href="/" className="inline-flex items-center text-sm font-medium text-blue-600 hover:underline">
+    <div className="animate-fadeInUp" style={{ maxWidth: '720px', margin: '0 auto' }}>
+      {/* Back link */}
+      <Link
+        href="/"
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: '6px',
+          fontSize: '13px', fontWeight: 600, textDecoration: 'none',
+          color: 'var(--accent-primary)',
+          marginBottom: '24px',
+          padding: '7px 14px',
+          borderRadius: '20px',
+          background: 'rgba(139, 105, 20, 0.07)',
+          border: '1px solid rgba(139, 105, 20, 0.15)',
+          transition: 'all 0.2s ease',
+        }}
+      >
         ← Kembali ke daftar postingan
       </Link>
 
-      <article className="bg-white border border-gray-100 rounded-xl p-8 shadow-sm space-y-6">
-        <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+      {/* Article card */}
+      <article style={{
+        background: 'rgba(255, 255, 245, 0.88)',
+        border: '1px solid rgba(210, 190, 120, 0.35)',
+        borderRadius: '16px',
+        padding: '32px',
+        boxShadow: '0 4px 24px rgba(100, 80, 20, 0.08)',
+        backdropFilter: 'blur(8px)',
+      }}>
+        {/* Article header meta */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap',
+          paddingBottom: '20px', marginBottom: '24px',
+          borderBottom: '1px solid rgba(210, 190, 120, 0.25)',
+        }}>
           {post.isSticky && (
-            <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-md font-medium">
-              📌 Sticky
+            <span style={{
+              fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
+              padding: '4px 10px', borderRadius: '20px',
+              background: 'rgba(212, 160, 23, 0.15)', color: '#8b6203',
+              border: '1px solid rgba(212, 160, 23, 0.3)',
+            }}>
+              📌 Pinned
             </span>
           )}
-          <span className="text-sm bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md font-semibold">
+          <span style={{
+            fontSize: '12px', fontWeight: 600, padding: '4px 12px', borderRadius: '20px',
+            background: 'rgba(139, 105, 20, 0.09)', color: 'var(--accent-primary)',
+            border: '1px solid rgba(139, 105, 20, 0.18)',
+          }}>
             @{post.channelUsername}
           </span>
-          <time className="text-xs text-gray-400">{date}</time>
+          <time style={{ fontSize: '12px', color: 'var(--text-muted)', marginLeft: 'auto' }}>
+            {date}
+          </time>
         </div>
 
-        {post.content && (
-          <p className="text-gray-800 text-base leading-relaxed whitespace-pre-wrap">
-            {post.content}
-          </p>
-        )}
+        {/* Media Preview */}
+        <MediaPreview post={post} />
 
-        {post.mediaType && post.mediaUrl && (
-          <div className="border border-gray-100 rounded-lg p-4 bg-gray-50 flex items-center justify-between">
-            <span className="text-sm text-gray-600 font-medium">
-              {post.mediaType === 'photo' ? '📷 Photo Attachment' : post.mediaType === 'video' ? '🎥 Video Attachment' : '📁 Document File'}
-            </span>
-            <span className="text-xs text-gray-400 font-mono select-all">
-              ID: {post.mediaUrl}
-            </span>
+        {/* Body content */}
+        {post.content && (
+          <div className="article-body">
+            {post.content.split('\n').map((paragraph, i) =>
+              paragraph.trim() ? (
+                <p key={i}>{paragraph}</p>
+              ) : (
+                <br key={i} />
+              )
+            )}
           </div>
         )}
       </article>

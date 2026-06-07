@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import RadioPlayer from "../components/RadioPlayer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -36,54 +32,101 @@ export default function RootLayout({
   const hasRadioStream = radioStreamUrl && (radioStreamUrl.startsWith("http://") || radioStreamUrl.startsWith("https://"));
 
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-gray-50 text-gray-900">
-        <header className="bg-white border-b border-gray-100">
-          <div className="max-w-5xl mx-auto px-4 py-6 flex items-center justify-between">
-            <h1 className="text-xl font-bold tracking-tight text-blue-600">
-              {blogTitle}
-            </h1>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                {hasAndroidLink && (
-                  <a
-                    href={androidUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 transition-colors bg-blue-50 px-3 py-1.5 rounded-full"
-                    title="Download Android App"
-                  >
-                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M17.6 9c-.2-1.1-.9-2-1.8-2.6L17 4.2c.1-.2 0-.5-.2-.6-.2-.1-.5 0-.6.2l-1.3 2.4c-1-.4-2-.6-3-.6s-2 .2-3 .6L7.6 3.8c-.1-.2-.4-.3-.6-.2-.2.1-.3.4-.2.6l1.2 2.2c-.9.6-1.6 1.5-1.8 2.6H17.6M9 8c-.3 0-.5-.2-.5-.5s.2-.5.5-.5.5.2.5.5-.2.5-.5.5m6 0c-.3 0-.5-.2-.5-.5s.2-.5.5-.5.5.2.5.5-.2.5-.5.5M5 10v6c0 .6.4 1 1 1h12c.6 0 1-.4 1-1v-6H5m3 8v3c0 .6-.4 1-1 1s-1-.4-1-1v-3h2m10 0v3c0 .6-.4 1-1 1s-1-.4-1-1v-3h2M4.5 10v5c0 .6-.4 1-1 1s-1-.4-1-1v-5c0-.6.4-1 1-1s1 .4 1 1m16 0v5c0 .6-.4 1-1 1s-1-.4-1-1v-5c0-.6.4-1 1-1s1 .4 1 1" />
-                    </svg>
-                    Android
-                  </a>
-                )}
-                {hasIosLink && (
-                  <a
-                    href={iosUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 transition-colors bg-blue-50 px-3 py-1.5 rounded-full"
-                    title="Download iOS App"
-                  >
-                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.21.67-2.93 1.49-.62.69-1.16 1.84-1.01 2.96 1.12.09 2.27-.57 2.95-1.39z" />
-                    </svg>
-                    iOS
-                  </a>
-                )}
-              </div>
-              <span className="text-sm text-gray-500 font-medium">{blogSubtitle}</span>
+    <html lang="id" className={`${inter.variable} h-full`}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
+      <body className="min-h-full flex flex-col">
+        {/* Header */}
+        <header style={{
+          background: 'rgba(255, 252, 230, 0.88)',
+          backdropFilter: 'blur(12px)',
+          borderBottom: '1px solid rgba(210, 190, 120, 0.35)',
+          position: 'sticky',
+          top: 0,
+          zIndex: 40,
+        }}>
+          <div className="max-w-5xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
+            {/* Brand */}
+            <div className="flex flex-col min-w-0">
+              <h1 className="text-xl font-bold truncate" style={{ color: 'var(--accent-primary)', fontFamily: "'Inter', sans-serif", letterSpacing: '-0.02em' }}>
+                {blogTitle}
+              </h1>
+              <span className="text-xs mt-0.5" style={{ color: 'var(--text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                {blogSubtitle}
+              </span>
+            </div>
+
+            {/* Right side actions */}
+            <div className="flex items-center gap-2 shrink-0">
+              {hasAndroidLink && (
+                <a
+                  href={androidUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Download Android App"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '5px',
+                    fontSize: '11px', fontWeight: 600, padding: '6px 12px',
+                    borderRadius: '20px', textDecoration: 'none',
+                    background: 'rgba(139, 105, 20, 0.08)',
+                    color: 'var(--accent-primary)',
+                    border: '1px solid rgba(139, 105, 20, 0.2)',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <svg style={{ width: 13, height: 13 }} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.6 9c-.2-1.1-.9-2-1.8-2.6L17 4.2c.1-.2 0-.5-.2-.6-.2-.1-.5 0-.6.2l-1.3 2.4c-1-.4-2-.6-3-.6s-2 .2-3 .6L7.6 3.8c-.1-.2-.4-.3-.6-.2-.2.1-.3.4-.2.6l1.2 2.2c-.9.6-1.6 1.5-1.8 2.6H17.6M9 8c-.3 0-.5-.2-.5-.5s.2-.5.5-.5.5.2.5.5-.2.5-.5.5m6 0c-.3 0-.5-.2-.5-.5s.2-.5.5-.5.5.2.5.5-.2.5-.5.5M5 10v6c0 .6.4 1 1 1h12c.6 0 1-.4 1-1v-6H5m3 8v3c0 .6-.4 1-1 1s-1-.4-1-1v-3h2m10 0v3c0 .6-.4 1-1 1s-1-.4-1-1v-3h2M4.5 10v5c0 .6-.4 1-1 1s-1-.4-1-1v-5c0-.6.4-1 1-1s1 .4 1 1m16 0v5c0 .6-.4 1-1 1s-1-.4-1-1v-5c0-.6.4-1 1-1s1 .4 1 1" />
+                  </svg>
+                  Android
+                </a>
+              )}
+              {hasIosLink && (
+                <a
+                  href={iosUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Download iOS App"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '5px',
+                    fontSize: '11px', fontWeight: 600, padding: '6px 12px',
+                    borderRadius: '20px', textDecoration: 'none',
+                    background: 'rgba(139, 105, 20, 0.08)',
+                    color: 'var(--accent-primary)',
+                    border: '1px solid rgba(139, 105, 20, 0.2)',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <svg style={{ width: 13, height: 13 }} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.21.67-2.93 1.49-.62.69-1.16 1.84-1.01 2.96 1.12.09 2.27-.57 2.95-1.39z" />
+                  </svg>
+                  iOS
+                </a>
+              )}
             </div>
           </div>
         </header>
-        <main className="flex-grow max-w-5xl w-full mx-auto px-4 py-8">
+
+        {/* Main content */}
+        <main className="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-10">
           {children}
         </main>
-        <footer className="bg-white border-t border-gray-100 mt-12 py-6 text-center text-sm text-gray-400">
-          <p>© {new Date().getFullYear()} {blogTitle}. All rights reserved.</p>
+
+        {/* Footer */}
+        <footer style={{
+          borderTop: '1px solid rgba(210, 190, 120, 0.3)',
+          background: 'rgba(255, 252, 220, 0.6)',
+          padding: '24px 0',
+          marginTop: '48px',
+          textAlign: 'center',
+          fontSize: '13px',
+          color: 'var(--text-muted)',
+        }}>
+          <p>© {new Date().getFullYear()} <strong style={{ color: 'var(--accent-primary)' }}>{blogTitle}</strong>. All rights reserved.</p>
         </footer>
+
+        {/* Radio Player Widget */}
         {hasRadioStream && <RadioPlayer streamUrl={radioStreamUrl} />}
       </body>
     </html>
