@@ -29,12 +29,12 @@ export async function syncAllPosts(channelId: string): Promise<number> {
   bot.on('channel_post', async (msg) => {
     if (msg.chat.username !== channelId.replace('@', '')) return;
 
-    if (msg.video_chat_started) {
+    if ((msg as any).video_chat_started) {
       console.log('[sync] Live Stream started!');
       channelLiveStatus = true;
       return;
     }
-    if (msg.video_chat_ended) {
+    if ((msg as any).video_chat_ended) {
       console.log('[sync] Live Stream ended!');
       channelLiveStatus = false;
       return;
