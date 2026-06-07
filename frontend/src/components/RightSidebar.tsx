@@ -27,6 +27,12 @@ export function RightSidebar({ hasRadio, radioStreamUrl, hasAndroid, androidUrl,
       <SearchWidget />
       <AnnouncementWidget text={announcement} />
       <ChannelStats />
+      {/* Embedded Radio Player */}
+      {hasRadio && (
+        <div style={{ marginBottom: '24px' }}>
+          <RadioPlayer streamUrl={radioStreamUrl} />
+        </div>
+      )}
       <PopularPostsWidget />
       <TagCloud />
       <SocialLinksWidget instagram={instagram} youtube={youtube} xUrl={xUrl} facebook={facebook} />
@@ -98,12 +104,6 @@ export function RightSidebar({ hasRadio, radioStreamUrl, hasAndroid, androidUrl,
         </div>
       )}
 
-      {/* Embedded Radio Player */}
-      {hasRadio && (
-        <div style={{ marginBottom: '24px' }}>
-          <RadioPlayer streamUrl={radioStreamUrl} />
-        </div>
-      )}
     </aside>
   );
 }
