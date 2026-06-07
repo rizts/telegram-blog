@@ -128,7 +128,7 @@ export default async function PostDetail({ params }: PageProps) {
 
   try {
     const res = await fetch(`${API_URL}/posts/${id}`, {
-      cache: 'no-store', // Disable caching for SSR per request
+      next: { revalidate: 60 }, // ISR: Cache details and revalidate every 60s
     });
 
     if (res.status === 404) {
