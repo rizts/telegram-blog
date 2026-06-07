@@ -1,5 +1,9 @@
 import { ChannelStats } from './widgets/ChannelStats';
 import { TagCloud } from './widgets/TagCloud';
+import { AnnouncementWidget } from './widgets/AnnouncementWidget';
+import { SocialLinksWidget } from './widgets/SocialLinksWidget';
+import { SearchWidget } from './widgets/SearchWidget';
+import { PopularPostsWidget } from './widgets/PopularPostsWidget';
 import RadioPlayer from './RadioPlayer';
 
 interface Props {
@@ -12,11 +16,20 @@ interface Props {
 }
 
 export function RightSidebar({ hasRadio, radioStreamUrl, hasAndroid, androidUrl, hasIos, iosUrl }: Props) {
+  const announcement = process.env.NEXT_PUBLIC_ANNOUNCEMENT_TEXT || '';
+  const instagram = process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM || '';
+  const youtube = process.env.NEXT_PUBLIC_SOCIAL_YOUTUBE || '';
+  const xUrl = process.env.NEXT_PUBLIC_SOCIAL_X || '';
+  const facebook = process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK || '';
+
   return (
     <aside style={{ width: '100%', minWidth: '300px' }}>
+      <SearchWidget />
+      <AnnouncementWidget text={announcement} />
       <ChannelStats />
-      
+      <PopularPostsWidget />
       <TagCloud />
+      <SocialLinksWidget instagram={instagram} youtube={youtube} xUrl={xUrl} facebook={facebook} />
 
       {/* App Download Links in Sidebar */}
       {(hasAndroid || hasIos) && (

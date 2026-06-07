@@ -22,8 +22,16 @@ This project is divided into two main layers:
 - **Media Preview via Telegram CDN Proxy**: Safely fetches and streams Telegram attachments (photos, videos, documents) natively through the backend without exposing the bot token to the frontend.
 - **Dynamic Channel Logo**: Automatically retrieves and caches the channel's profile picture using the Telegram API to display on the blog header.
 - **Artistic Redesign**: A warm, responsive, and visually appealing user interface utilizing tailored typography (Inter and Lora) and glassmorphic card layouts.
-- **Online Radio Player Widget**: Interactive, floating HTML5 streaming player featuring volume control and a live indicator, visible when a stream URL is configured.
-
+- **Two-Column Layout & Sidebar**: Modern 70/30 split layout with a robust right sidebar holding interactive widgets.
+- **Analytics & View Tracking**: Built-in view counter for posts to determine and showcase "Popular" articles.
+- **Auto Categorization**: Extracts hashtags from Telegram messages using Regex to automatically build a topic Tag Cloud.
+- **Search & Filtering**: Full-text search support alongside topic/tag-based filtering on the main feed.
+- **Dynamic Widgets**:
+  - **Online Radio Player**: Interactive HTML5 streaming player embedded in the sidebar.
+  - **Channel Stats**: Displays live subscriber count and bio directly from the Telegram channel.
+  - **Announcements**: Configurable static announcement box for campaigns/donations.
+  - **Social Links**: Centralized social media icons.
+  - **App Download Links**: Conditionally renders buttons for Android/iOS companion apps.
 ---
 
 ## Environment Variables (`.env`)
@@ -51,7 +59,12 @@ Copy the `frontend/.env.example` file to `frontend/.env` and configure the follo
 * `NEXT_PUBLIC_ADMIN_SECRET`: The secret string matching backend's `ADMIN_SECRET` to authorize administrative UI actions (e.g., toggling sticky posts).
 * `NEXT_PUBLIC_DOWNLOAD_ANDROID_URL`: Optional download URL for the Android companion app (only displayed in layout if it is a valid HTTP/HTTPS URL).
 * `NEXT_PUBLIC_DOWNLOAD_IOS_URL`: Optional download URL for the iOS companion app (only displayed in layout if it is a valid HTTP/HTTPS URL).
-* `NEXT_PUBLIC_RADIO_STREAM_URL`: Optional streaming URL for the online radio widget (only displayed on the website if it is a valid HTTP/HTTPS URL).
+* `NEXT_PUBLIC_RADIO_STREAM_URL`: Optional streaming URL for the online radio widget.
+* `NEXT_PUBLIC_ANNOUNCEMENT_TEXT`: Optional static text for the announcement box in the sidebar.
+* `NEXT_PUBLIC_SOCIAL_INSTAGRAM`: Optional URL for the Instagram social link.
+* `NEXT_PUBLIC_SOCIAL_YOUTUBE`: Optional URL for the YouTube social link.
+* `NEXT_PUBLIC_SOCIAL_X`: Optional URL for the X (Twitter) social link.
+* `NEXT_PUBLIC_SOCIAL_FACEBOOK`: Optional URL for the Facebook social link.
 
 ---
 

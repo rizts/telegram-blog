@@ -9,15 +9,17 @@ const bot = new TelegramBot(process.env.BOT_TOKEN!, { polling: false });
 const postsRoutes: FastifyPluginAsync = async (fastify) => {
   // GET /posts?page=1&limit=10
   // Returns all sticky posts (unpaginated) + regular posts (paginated)
-  fastify.get<{ Querystring: { page?: string; limit?: string; sort?: 'newest' | 'popular'; tag?: string } }>('/', async (request, reply) => {
+  fastify.get<{ Querystring: { page?: string; limit?: string; sort?: 'newest' | 'popular'; tag?: string; search?: string } }>('/', async (request, reply) => {
     const page = Math.max(1, parseInt(request.query.page ?? '1'));
     const limit = Math.min(50, parseInt(request.query.limit ?? '10'));
     const offset = (page - 1) * limit;
     const sortParam = request.query.sort ?? 'newest';
     const tagParam = request.query.tag;
+    const searchParam = request.query.search;
 
     const notDeleted = eq(posts.isDeleted, false);
     const tagFilter = tagParam ? sql`${tagParam} = ANY(${posts.tags})` : sql`TRUE`;
+    const searchFilter = searchParam ? sql`${posts.content} ILIKE ${`%${searchParam}%`}` : sql`TRUE`;
     const orderClause = sortParam === 'popular' ? desc(posts.views) : desc(posts.publishedAt);
 
     const [stickyData, regularData, countResult] = await Promise.all([
@@ -25,14 +27,14 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
       db
         .select()
         .from(posts)
-        .where(and(notDeleted, eq(posts.isSticky, true), tagFilter))
+        .where(and(notDeleted, eq(posts.isSticky, true), tagFilter, searchFilter))
         .orderBy(desc(posts.publishedAt)),
 
       // Regular posts — paginated, excluding sticky posts
       db
         .select()
         .from(posts)
-        .where(and(notDeleted, eq(posts.isSticky, false), tagFilter))
+        .where(and(notDeleted, eq(posts.isSticky, false), tagFilter, searchFilter))
         .orderBy(orderClause)
         .limit(limit)
         .offset(offset),
@@ -41,7 +43,7 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
       db
         .select({ count: sql<number>`count(*)` })
         .from(posts)
-        .where(and(notDeleted, eq(posts.isSticky, false), tagFilter)),
+        .where(and(notDeleted, eq(posts.isSticky, false), tagFilter, searchFilter)),
     ]);
 
     return {
