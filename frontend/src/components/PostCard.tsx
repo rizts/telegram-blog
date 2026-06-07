@@ -145,6 +145,7 @@ export function PostCard({ post, variant = 'default' }: Props) {
           WebkitLineClamp: 4,
           WebkitBoxOrient: 'vertical',
           overflow: 'hidden',
+          whiteSpace: 'pre-wrap',
           margin: 0,
           flex: 1,
         }}>
