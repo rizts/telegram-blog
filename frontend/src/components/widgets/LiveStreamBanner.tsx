@@ -32,51 +32,75 @@ export function LiveStreamBanner() {
     return () => clearInterval(intervalId);
   }, []);
 
-  if (!isLive || !channelUrl) return null;
-
   return (
-    <a
-      href={channelUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{
-        display: 'block',
-        background: 'linear-gradient(135deg, #d32f2f, #f44336)',
-        color: 'white',
-        padding: '16px 20px',
-        borderRadius: '14px',
-        marginBottom: '24px',
-        textDecoration: 'none',
-        boxShadow: '0 4px 15px rgba(211, 47, 47, 0.4)',
-        position: 'relative',
-        overflow: 'hidden',
-        animation: 'pulse 2s infinite'
-      }}
-      className="live-banner"
-    >
+    <div style={{
+      background: 'rgba(255, 255, 245, 0.82)',
+      border: '1px solid rgba(210, 195, 150, 0.35)',
+      borderRadius: '14px',
+      padding: '24px',
+      marginBottom: '24px',
+      backdropFilter: 'blur(6px)',
+      boxShadow: '0 1px 6px rgba(100, 80, 20, 0.06)',
+    }}>
+      <h3 style={{
+        fontSize: '15px', fontWeight: 700, color: 'var(--accent-primary)',
+        marginBottom: '16px', borderBottom: '1px solid rgba(210, 195, 150, 0.3)',
+        paddingBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+      }}>
+        Telegram Live Stream
+        {isLive ? (
+          <span style={{
+            fontSize: '11px', fontWeight: 800, padding: '4px 8px', borderRadius: '12px',
+            background: 'rgba(244, 67, 54, 0.1)', color: '#d32f2f',
+            border: '1px solid rgba(244, 67, 54, 0.3)', display: 'flex', alignItems: 'center', gap: '6px',
+            animation: 'pulse-live 2s infinite'
+          }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#d32f2f' }}></span>
+            LIVE
+          </span>
+        ) : (
+          <span style={{
+            fontSize: '11px', fontWeight: 800, padding: '4px 8px', borderRadius: '12px',
+            background: 'rgba(150, 150, 150, 0.1)', color: '#777',
+            border: '1px solid rgba(150, 150, 150, 0.3)'
+          }}>
+            OFFLINE
+          </span>
+        )}
+      </h3>
+
       <style>{`
-        @keyframes pulse {
-          0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }
-          70% { box-shadow: 0 0 0 10px rgba(211, 47, 47, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
+        @keyframes pulse-live {
+          0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); }
+          70% { box-shadow: 0 0 0 6px rgba(244, 67, 54, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
         }
       `}</style>
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: '12px'
-      }}>
-        <div style={{
-          width: '12px', height: '12px', backgroundColor: 'white', borderRadius: '50%',
-          boxShadow: '0 0 10px white'
-        }}></div>
-        <div>
-          <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Siaran Langsung
-          </h3>
-          <p style={{ margin: '4px 0 0 0', fontSize: '13px', fontWeight: 500, opacity: 0.9 }}>
-            Sedang berlangsung di Telegram. Klik untuk bergabung!
-          </p>
+
+      {isLive ? (
+        <a
+          href={channelUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+            fontSize: '13px', fontWeight: 600, padding: '12px 16px',
+            borderRadius: '10px', textDecoration: 'none',
+            background: 'linear-gradient(135deg, #d32f2f, #f44336)',
+            color: 'white',
+            boxShadow: '0 4px 10px rgba(211, 47, 47, 0.2)',
+            transition: 'transform 0.2s ease',
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+        >
+          <span>🎧</span> Bergabung ke Siaran
+        </a>
+      ) : (
+        <div style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: '1.6', textAlign: 'center' }}>
+          Saat ini tidak ada siaran langsung di Telegram.
         </div>
-      </div>
-    </a>
+      )}
+    </div>
   );
 }

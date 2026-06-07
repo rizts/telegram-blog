@@ -25,10 +25,10 @@ export function RightSidebar({ hasRadio, radioStreamUrl, hasAndroid, androidUrl,
 
   return (
     <aside style={{ width: '100%', minWidth: '300px' }}>
-      <LiveStreamBanner />
       <SearchWidget />
       <AnnouncementWidget text={announcement} />
       <ChannelStats />
+      <LiveStreamBanner />
       {/* Embedded Radio Player */}
       {hasRadio && (
         <div style={{ marginBottom: '24px' }}>
