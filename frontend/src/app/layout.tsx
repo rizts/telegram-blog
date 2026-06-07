@@ -13,6 +13,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: process.env.NEXT_PUBLIC_BLOG_TITLE || "Telegram Channel Blog",
   description: process.env.NEXT_PUBLIC_BLOG_DESCRIPTION || "A beautiful blog that aggregates and displays public Telegram channel posts.",
+  icons: {
+    icon: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/channel/photo`,
+    apple: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/channel/photo`,
+  }
 };
 
 export default function RootLayout({
