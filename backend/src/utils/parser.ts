@@ -17,10 +17,21 @@ export function parseMessage(msg: Message, channelUsername: string): NewPost {
     mediaType = 'document';
   }
 
+  const content = msg.text ?? msg.caption ?? null;
+
+  let tags: string[] | null = null;
+  if (content) {
+    const extracted = content.match(/#[\w_]+/g);
+    tags = extracted ? extracted : ['Uncategorized'];
+  } else {
+    tags = ['Uncategorized'];
+  }
+
   return {
     telegramMessageId: msg.forward_from_message_id ?? msg.message_id,
     channelUsername: channelUsername.replace('@', ''),
-    content: msg.text ?? msg.caption ?? null,
+    content,
+    tags,
     mediaUrl,
     mediaType,
     forwardedFrom: msg.forward_from_chat?.title ?? null,

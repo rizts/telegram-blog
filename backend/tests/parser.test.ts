@@ -43,4 +43,15 @@ describe('parseMessage', () => {
     expect(result.publishedAt).toBeInstanceOf(Date);
     expect(result.publishedAt.getTime()).toBe(1700000000 * 1000);
   });
+
+  it('extracts hashtags into tags array', () => {
+    const msg = mockMsg({ text: 'Hello #Kajian and #Info_Penting!' });
+    const result = parseMessage(msg as any, '@testchannel');
+    expect(result.tags).toEqual(['#Kajian', '#Info_Penting']);
+  });
+
+  it('assigns Uncategorized if no hashtags found', () => {
+    const result = parseMessage(mockMsg() as any, '@testchannel');
+    expect(result.tags).toEqual(['Uncategorized']);
+  });
 });

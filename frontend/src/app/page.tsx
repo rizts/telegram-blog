@@ -8,19 +8,28 @@ export const revalidate = 60; // ISR revalidate every 60 seconds
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 interface PageProps {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; sort?: string; tag?: string }>;
 }
 
 export default async function Home({ searchParams }: PageProps) {
   const resolvedParams = await searchParams;
   const page = Math.max(1, parseInt(resolvedParams.page || '1'));
+  const sort = resolvedParams.sort || 'newest';
+  const tag = resolvedParams.tag || '';
   const limit = 10;
 
   let data: PaginatedResponse | null = null;
   let errorMsg: string | null = null;
 
   try {
-    const res = await fetch(`${API_URL}/posts?page=${page}&limit=${limit}`, {
+    const query = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      ...(sort && { sort }),
+      ...(tag && { tag }),
+    });
+
+    const res = await fetch(`${API_URL}/posts?${query.toString()}`, {
       next: { revalidate: 60 }
     });
     if (!res.ok) {
@@ -62,26 +71,49 @@ export default async function Home({ searchParams }: PageProps) {
 
       {/* Regular Posts Section */}
       <section>
-        {/* Section header */}
+        {/* Section header & Tabs */}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          marginBottom: '20px', flexWrap: 'wrap', gap: '12px'
         }}>
-          <div style={{
-            padding: '5px 14px',
-            borderRadius: '20px',
-            background: 'rgba(139, 105, 20, 0.08)',
-            border: '1px solid rgba(139, 105, 20, 0.15)',
-          }}>
-            <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--accent-primary)' }}>
-              Daftar Posting
-            </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{
+              padding: '5px 14px',
+              borderRadius: '20px',
+              background: 'rgba(139, 105, 20, 0.08)',
+              border: '1px solid rgba(139, 105, 20, 0.15)',
+            }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--accent-primary)' }}>
+                {tag ? `Tag: #${tag}` : 'Daftar Posting'}
+              </span>
+            </div>
+            {meta.total > 0 && (
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 500 }}>
+                {meta.total} artikel
+              </span>
+            )}
           </div>
-          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, rgba(180, 150, 60, 0.3), transparent)' }} />
-          {meta.total > 0 && (
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 500 }}>
-              {meta.total} artikel
-            </span>
-          )}
+
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <Link href={tag ? `/?tag=${tag}&sort=newest` : '/?sort=newest'} style={{
+              fontSize: '12px', fontWeight: 600, padding: '6px 14px', borderRadius: '20px', textDecoration: 'none',
+              background: sort === 'newest' ? 'var(--accent-primary)' : 'transparent',
+              color: sort === 'newest' ? '#fff' : 'var(--text-muted)',
+              border: `1px solid ${sort === 'newest' ? 'transparent' : 'rgba(180, 150, 60, 0.2)'}`,
+              transition: 'all 0.2s ease'
+            }}>
+              ✨ Terbaru
+            </Link>
+            <Link href={tag ? `/?tag=${tag}&sort=popular` : '/?sort=popular'} style={{
+              fontSize: '12px', fontWeight: 600, padding: '6px 14px', borderRadius: '20px', textDecoration: 'none',
+              background: sort === 'popular' ? 'var(--accent-primary)' : 'transparent',
+              color: sort === 'popular' ? '#fff' : 'var(--text-muted)',
+              border: `1px solid ${sort === 'popular' ? 'transparent' : 'rgba(180, 150, 60, 0.2)'}`,
+              transition: 'all 0.2s ease'
+            }}>
+              🔥 Terpopuler
+            </Link>
+          </div>
         </div>
 
         {regularPosts.length === 0 ? (
@@ -121,7 +153,7 @@ export default async function Home({ searchParams }: PageProps) {
           borderTop: '1px solid rgba(180, 150, 60, 0.2)',
         }}>
           {page > 1 ? (
-            <Link href={`/?page=${page - 1}`} style={{
+            <Link href={`/?page=${page - 1}${sort !== 'newest' ? `&sort=${sort}` : ''}${tag ? `&tag=${tag}` : ''}`} style={{
               padding: '8px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 600,
               textDecoration: 'none', color: 'var(--accent-primary)',
               background: 'rgba(139, 105, 20, 0.08)', border: '1px solid rgba(139, 105, 20, 0.2)',
@@ -143,7 +175,7 @@ export default async function Home({ searchParams }: PageProps) {
           </span>
 
           {page < meta.totalPages ? (
-            <Link href={`/?page=${page + 1}`} style={{
+            <Link href={`/?page=${page + 1}${sort !== 'newest' ? `&sort=${sort}` : ''}${tag ? `&tag=${tag}` : ''}`} style={{
               padding: '8px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 600,
               textDecoration: 'none', color: 'var(--accent-primary)',
               background: 'rgba(139, 105, 20, 0.08)', border: '1px solid rgba(139, 105, 20, 0.2)',

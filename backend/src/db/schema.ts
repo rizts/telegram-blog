@@ -13,6 +13,8 @@ export const posts = pgTable('posts', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   isDeleted: boolean('is_deleted').default(false).notNull(),
   isSticky: boolean('is_sticky').default(false).notNull(),
+  views: integer('views').default(0).notNull(),
+  tags: text('tags').array(),
 });
 
 export type Post = typeof posts.$inferSelect;

@@ -9,27 +9,31 @@ const bot = new TelegramBot(process.env.BOT_TOKEN!, { polling: false });
 const postsRoutes: FastifyPluginAsync = async (fastify) => {
   // GET /posts?page=1&limit=10
   // Returns all sticky posts (unpaginated) + regular posts (paginated)
-  fastify.get<{ Querystring: { page?: string; limit?: string } }>('/', async (request, reply) => {
+  fastify.get<{ Querystring: { page?: string; limit?: string; sort?: 'newest' | 'popular'; tag?: string } }>('/', async (request, reply) => {
     const page = Math.max(1, parseInt(request.query.page ?? '1'));
     const limit = Math.min(50, parseInt(request.query.limit ?? '10'));
     const offset = (page - 1) * limit;
+    const sortParam = request.query.sort ?? 'newest';
+    const tagParam = request.query.tag;
 
     const notDeleted = eq(posts.isDeleted, false);
+    const tagFilter = tagParam ? sql`${tagParam} = ANY(${posts.tags})` : sql`TRUE`;
+    const orderClause = sortParam === 'popular' ? desc(posts.views) : desc(posts.publishedAt);
 
     const [stickyData, regularData, countResult] = await Promise.all([
       // Sticky posts — all are displayed, sorted by newest
       db
         .select()
         .from(posts)
-        .where(and(notDeleted, eq(posts.isSticky, true)))
+        .where(and(notDeleted, eq(posts.isSticky, true), tagFilter))
         .orderBy(desc(posts.publishedAt)),
 
       // Regular posts — paginated, excluding sticky posts
       db
         .select()
         .from(posts)
-        .where(and(notDeleted, eq(posts.isSticky, false)))
-        .orderBy(desc(posts.publishedAt))
+        .where(and(notDeleted, eq(posts.isSticky, false), tagFilter))
+        .orderBy(orderClause)
         .limit(limit)
         .offset(offset),
 
@@ -37,7 +41,7 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
       db
         .select({ count: sql<number>`count(*)` })
         .from(posts)
-        .where(and(notDeleted, eq(posts.isSticky, false))),
+        .where(and(notDeleted, eq(posts.isSticky, false), tagFilter)),
     ]);
 
     return {
@@ -50,6 +54,18 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
         totalPages: Math.ceil(Number(countResult[0].count) / limit),
       },
     };
+  });
+
+  // GET /posts/tags — get all tags and their counts
+  fastify.get('/tags', async (request, reply) => {
+    const result = await db.execute(sql`
+      SELECT unnest(tags) as tag, count(*) as count
+      FROM posts
+      WHERE is_deleted = false
+      GROUP BY tag
+      ORDER BY count DESC
+    `);
+    return result.rows;
   });
 
   // GET /posts/:id
@@ -66,6 +82,22 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     return post[0];
+  });
+
+  // POST /posts/:id/view — increment view count
+  fastify.post<{ Params: { id: string } }>('/:id/view', async (request, reply) => {
+    const id = parseInt(request.params.id);
+    const updated = await db
+      .update(posts)
+      .set({ views: sql`${posts.views} + 1` })
+      .where(eq(posts.id, id))
+      .returning({ views: posts.views });
+
+    if (!updated.length) {
+      reply.status(404);
+      return { error: 'Post not found' };
+    }
+    return updated[0];
   });
 
   // GET /posts/:id/media — proxy actual media file from Telegram CDN

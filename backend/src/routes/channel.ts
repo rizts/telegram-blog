@@ -50,6 +50,32 @@ const channelRoutes: FastifyPluginAsync = async (fastify) => {
       return { error: 'Failed to resolve channel photo' };
     }
   });
+
+  // GET /channel/info — get subscriber count and channel description
+  fastify.get('/info', async (request, reply) => {
+    const channelId = process.env.CHANNEL_USERNAME;
+    if (!channelId) {
+      reply.status(503);
+      return { error: 'CHANNEL_USERNAME is not configured' };
+    }
+
+    try {
+      const [chat, memberCount] = await Promise.all([
+        bot.getChat(channelId),
+        bot.getChatMemberCount(channelId)
+      ]);
+
+      return {
+        title: chat.title,
+        description: chat.description || null,
+        subscriberCount: memberCount
+      };
+    } catch (err) {
+      fastify.log.error(err);
+      reply.status(500);
+      return { error: 'Failed to fetch channel info' };
+    }
+  });
 };
 
 export default channelRoutes;

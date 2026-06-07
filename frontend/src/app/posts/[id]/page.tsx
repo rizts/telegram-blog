@@ -1,5 +1,6 @@
 import type { Post } from '../../../types/post';
 import Link from 'next/link';
+import { ViewCounter } from '../../../components/ViewCounter';
 import { notFound } from 'next/navigation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
@@ -160,6 +161,7 @@ export default async function PostDetail({ params }: PageProps) {
 
   return (
     <div className="animate-fadeInUp" style={{ maxWidth: '720px', margin: '0 auto' }}>
+      <ViewCounter postId={post.id} />
       {/* Back link */}
       <Link
         href="/"
