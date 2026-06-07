@@ -141,13 +141,15 @@ export function PostCard({ post, variant = 'default' }: Props) {
           fontSize: '14px',
           lineHeight: '1.7',
           color: 'var(--text-primary)',
-          display: '-webkit-box',
-          WebkitLineClamp: 4,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden',
           whiteSpace: 'pre-wrap',
           margin: 0,
           flex: 1,
+          ...(isSticky ? {} : {
+            display: '-webkit-box',
+            WebkitLineClamp: 4,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          })
         }}>
           {post.content}
         </p>

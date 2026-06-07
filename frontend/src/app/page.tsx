@@ -16,7 +16,7 @@ export default async function Home({ searchParams }: PageProps) {
   const page = Math.max(1, parseInt(resolvedParams.page || '1'));
   const sort = resolvedParams.sort || 'newest';
   const tag = resolvedParams.tag || '';
-  const limit = 10;
+  const limit = 4;
 
   let data: PaginatedResponse | null = null;
   let errorMsg: string | null = null;

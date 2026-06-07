@@ -27,7 +27,18 @@ function TagCloudContent() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading || tags.length === 0) return null;
+  if (loading) {
+    return (
+      <div style={{
+        background: 'rgba(255, 255, 245, 0.82)',
+        border: '1px solid rgba(210, 195, 150, 0.35)',
+        borderRadius: '14px',
+        padding: '24px',
+        marginBottom: '24px',
+        minHeight: '120px',
+      }} />
+    );
+  }
 
   return (
     <div style={{
