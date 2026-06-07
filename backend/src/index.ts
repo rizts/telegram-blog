@@ -6,7 +6,7 @@ import { syncAllPosts } from './bot/sync';
 
 const fastify = Fastify({ logger: true });
 
-await fastify.register(cors, {
+fastify.register(cors, {
   origin: process.env.FRONTEND_URL || '*',
 });
 
