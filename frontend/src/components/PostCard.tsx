@@ -5,55 +5,58 @@ interface Props {
   variant?: 'default' | 'sticky';
 }
 
-function MediaPreview({ post }: { post: Post }) {
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+function mediaUrl(postId: number) {
+  return `${API_URL}/posts/${postId}/media`;
+}
+
+function MediaThumb({ post }: { post: Post }) {
   if (!post.mediaType || !post.mediaUrl) return null;
+
+  const url = mediaUrl(post.id);
 
   if (post.mediaType === 'photo') {
     return (
-      <div style={{
-        width: '100%',
-        aspectRatio: '16/9',
-        borderRadius: '10px',
-        overflow: 'hidden',
-        background: 'rgba(200, 175, 100, 0.12)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: '12px',
-        border: '1px solid rgba(200, 175, 100, 0.2)',
-        position: 'relative',
-      }}>
-        {/* Telegram photos are stored by file_id, not a direct URL — show a styled placeholder */}
-        <div style={{ textAlign: 'center', padding: '20px' }}>
-          <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '8px' }}>🖼️</span>
-          <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.04em', textTransform: 'uppercase', fontWeight: 500 }}>
-            Photo Attachment
-          </span>
-        </div>
-      </div>
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={url}
+        alt="Post image"
+        style={{
+          width: '100%',
+          aspectRatio: '16/9',
+          objectFit: 'cover',
+          borderRadius: '10px',
+          marginBottom: '12px',
+          display: 'block',
+          border: '1px solid rgba(210, 190, 120, 0.2)',
+          backgroundColor: 'rgba(200, 180, 100, 0.1)',
+        }}
+        loading="lazy"
+        onError={(e) => {
+          // Hide broken image gracefully
+          (e.currentTarget as HTMLImageElement).style.display = 'none';
+        }}
+      />
     );
   }
 
   if (post.mediaType === 'video') {
     return (
       <div style={{
-        width: '100%',
-        aspectRatio: '16/9',
-        borderRadius: '10px',
-        overflow: 'hidden',
-        background: 'rgba(60, 40, 10, 0.08)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        width: '100%', aspectRatio: '16/9',
+        borderRadius: '10px', overflow: 'hidden',
         marginBottom: '12px',
-        border: '1px solid rgba(200, 175, 100, 0.2)',
+        background: 'rgba(20, 15, 5, 0.06)',
+        border: '1px solid rgba(210, 190, 120, 0.2)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        position: 'relative',
       }}>
-        <div style={{ textAlign: 'center', padding: '20px' }}>
-          <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '8px' }}>🎥</span>
-          <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.04em', textTransform: 'uppercase', fontWeight: 500 }}>
-            Video Attachment
-          </span>
-        </div>
+        <span style={{ fontSize: '2rem' }}>🎥</span>
+        <span style={{
+          position: 'absolute', bottom: '8px', left: '50%', transform: 'translateX(-50%)',
+          fontSize: '10px', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase',
+        }}>Video</span>
       </div>
     );
   }
@@ -61,20 +64,14 @@ function MediaPreview({ post }: { post: Post }) {
   if (post.mediaType === 'document') {
     return (
       <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        padding: '10px 14px',
-        borderRadius: '10px',
+        display: 'flex', alignItems: 'center', gap: '8px',
+        padding: '8px 12px', borderRadius: '8px',
         background: 'rgba(139, 105, 20, 0.06)',
-        border: '1px solid rgba(200, 175, 100, 0.25)',
-        marginBottom: '12px',
+        border: '1px solid rgba(200, 175, 100, 0.2)',
+        marginBottom: '10px',
       }}>
-        <span style={{ fontSize: '1.75rem', lineHeight: 1 }}>📄</span>
-        <div>
-          <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent-primary)' }}>Document</div>
-          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '1px' }}>File attachment</div>
-        </div>
+        <span style={{ fontSize: '1.4rem', lineHeight: 1 }}>📄</span>
+        <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--accent-primary)' }}>Document</span>
       </div>
     );
   }
@@ -108,8 +105,8 @@ export function PostCard({ post, variant = 'default' }: Props) {
 
   return (
     <article style={cardStyle} className="card-hover">
-      {/* Media Preview */}
-      <MediaPreview post={post} />
+      {/* Real media thumbnail */}
+      <MediaThumb post={post} />
 
       {/* Meta row */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
@@ -143,7 +140,7 @@ export function PostCard({ post, variant = 'default' }: Props) {
           lineHeight: '1.7',
           color: 'var(--text-primary)',
           display: '-webkit-box',
-          WebkitLineClamp: 5,
+          WebkitLineClamp: 4,
           WebkitBoxOrient: 'vertical',
           overflow: 'hidden',
           margin: 0,

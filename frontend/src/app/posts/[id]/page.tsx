@@ -8,89 +8,111 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-function MediaPreview({ post }: { post: Post }) {
+function MediaViewer({ post }: { post: Post }) {
   if (!post.mediaType || !post.mediaUrl) return null;
 
-  const containerStyle: React.CSSProperties = {
+  const url = `${API_URL}/posts/${post.id}/media`;
+
+  const wrapperStyle: React.CSSProperties = {
     borderRadius: '12px',
     overflow: 'hidden',
-    marginBottom: '24px',
+    marginBottom: '28px',
     border: '1px solid rgba(210, 190, 120, 0.3)',
+    background: 'rgba(255, 248, 210, 0.4)',
   };
 
+  // ── Photo ──────────────────────────────────────────────────────────────────
   if (post.mediaType === 'photo') {
     return (
-      <div style={containerStyle}>
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(255, 245, 200, 0.9) 0%, rgba(255, 235, 160, 0.7) 100%)',
-          aspectRatio: '16/9',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '12px',
-          padding: '32px',
-        }}>
-          <span style={{ fontSize: '4rem', filter: 'drop-shadow(0 2px 8px rgba(180,140,20,0.2))' }}>🖼️</span>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--accent-primary)', marginBottom: '4px' }}>
-              Photo Attachment
-            </div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'monospace', wordBreak: 'break-all', maxWidth: '320px' }}>
-              File ID: {post.mediaUrl}
-            </div>
-          </div>
-        </div>
+      <div style={wrapperStyle}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={url}
+          alt="Post photo"
+          style={{
+            width: '100%',
+            maxHeight: '520px',
+            objectFit: 'contain',
+            display: 'block',
+            background: 'rgba(200, 180, 100, 0.08)',
+          }}
+        />
       </div>
     );
   }
 
+  // ── Video ──────────────────────────────────────────────────────────────────
   if (post.mediaType === 'video') {
     return (
-      <div style={containerStyle}>
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(40, 30, 10, 0.08) 0%, rgba(80, 60, 20, 0.06) 100%)',
-          aspectRatio: '16/9',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '12px',
-          padding: '32px',
-        }}>
-          <span style={{ fontSize: '4rem', filter: 'drop-shadow(0 2px 8px rgba(100,80,20,0.15))' }}>🎥</span>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--accent-primary)', marginBottom: '4px' }}>
-              Video Attachment
-            </div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'monospace', wordBreak: 'break-all', maxWidth: '320px' }}>
-              File ID: {post.mediaUrl}
-            </div>
-          </div>
-        </div>
+      <div style={wrapperStyle}>
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        <video
+          src={url}
+          controls
+          preload="metadata"
+          style={{
+            width: '100%',
+            maxHeight: '520px',
+            display: 'block',
+            background: '#000',
+          }}
+        />
       </div>
     );
   }
 
+  // ── Document / PDF ────────────────────────────────────────────────────────
   if (post.mediaType === 'document') {
+    // Detect by file extension hint in the stored file_id or just show PDF viewer
+    const looksLikePdf = post.mediaUrl.toLowerCase().includes('pdf') ||
+                         post.mediaUrl.toLowerCase().includes('.pdf');
+
+    if (looksLikePdf) {
+      return (
+        <div style={{ ...wrapperStyle, height: '640px' }}>
+          <iframe
+            src={url}
+            title="PDF Viewer"
+            style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+          />
+        </div>
+      );
+    }
+
+    // Generic document — show download button
     return (
       <div style={{
-        ...containerStyle,
+        ...wrapperStyle,
         padding: '20px 24px',
-        background: 'rgba(255, 248, 210, 0.6)',
         display: 'flex',
         alignItems: 'center',
         gap: '16px',
       }}>
         <span style={{ fontSize: '2.5rem', lineHeight: 1 }}>📄</span>
-        <div>
+        <div style={{ flex: 1 }}>
           <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--accent-primary)', marginBottom: '4px' }}>
             Document File
           </div>
-          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'monospace', wordBreak: 'break-all' }}>
-            File ID: {post.mediaUrl}
+          <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+            Click the button to view or download this file.
           </div>
         </div>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          download
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            padding: '8px 16px', borderRadius: '20px',
+            fontSize: '12px', fontWeight: 600, textDecoration: 'none',
+            color: 'white', background: 'var(--accent-primary)',
+            border: '1px solid rgba(139, 105, 20, 0.3)',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          ↓ Download
+        </a>
       </div>
     );
   }
@@ -193,8 +215,8 @@ export default async function PostDetail({ params }: PageProps) {
           </time>
         </div>
 
-        {/* Media Preview */}
-        <MediaPreview post={post} />
+        {/* Real media viewer */}
+        <MediaViewer post={post} />
 
         {/* Body content */}
         {post.content && (

@@ -29,7 +29,9 @@ describe('PostCard', () => {
 
   it('shows photo indicator when mediaType is photo', () => {
     render(<PostCard post={{ ...mockPost, mediaType: 'photo', mediaUrl: 'file123' }} />);
-    expect(screen.getByText(/photo attachment/i)).toBeTruthy();
+    const img = screen.getByRole('img', { name: /post image/i });
+    expect(img).toBeTruthy();
+    expect((img as HTMLImageElement).src).toContain('/posts/1/media');
   });
 
   it('does not render content when null', () => {
