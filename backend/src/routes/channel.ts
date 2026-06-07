@@ -1,5 +1,6 @@
 import type { FastifyPluginAsync } from 'fastify';
 import TelegramBot from 'node-telegram-bot-api';
+import { channelLiveStatus } from '../bot/sync';
 
 const bot = new TelegramBot(process.env.BOT_TOKEN!, { polling: false });
 
@@ -75,6 +76,16 @@ const channelRoutes: FastifyPluginAsync = async (fastify) => {
       reply.status(500);
       return { error: 'Failed to fetch channel info' };
     }
+  });
+
+  // GET /channel/live — get live stream status
+  fastify.get('/live', async (request, reply) => {
+    // Import dynamically or statically at top
+    // For simplicity, we can import it at the top of the file
+    return {
+      isLive: channelLiveStatus,
+      channelUrl: `https://t.me/${process.env.CHANNEL_USERNAME?.replace('@', '')}`
+    };
   });
 };
 

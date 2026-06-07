@@ -16,6 +16,8 @@ const bot = new TelegramBot(process.env.BOT_TOKEN!, { polling: false });
  * MTProto-compatible offset. For the standard Bot API, we store
  * the offset from polling and perform an initial sync via webhook replay.
  */
+export let channelLiveStatus = false;
+
 export async function syncAllPosts(channelId: string): Promise<number> {
   let synced = 0;
 
@@ -25,10 +27,22 @@ export async function syncAllPosts(channelId: string): Promise<number> {
 
   // 1. Listen for new channel posts (Auto-save)
   bot.on('channel_post', async (msg) => {
+    if (msg.chat.username !== channelId.replace('@', '')) return;
+
+    if (msg.video_chat_started) {
+      console.log('[sync] Live Stream started!');
+      channelLiveStatus = true;
+      return;
+    }
+    if (msg.video_chat_ended) {
+      console.log('[sync] Live Stream ended!');
+      channelLiveStatus = false;
+      return;
+    }
+
     const allowForwardSync = process.env.ALLOW_FORWARD_SYNC === 'true';
     if (allowForwardSync) return;
 
-    if (msg.chat.username !== channelId.replace('@', '')) return;
     const parsed = parseMessage(msg, channelId);
     await upsertPost(parsed);
     synced++;

@@ -4,6 +4,7 @@ import { AnnouncementWidget } from './widgets/AnnouncementWidget';
 import { SocialLinksWidget } from './widgets/SocialLinksWidget';
 import { SearchWidget } from './widgets/SearchWidget';
 import { PopularPostsWidget } from './widgets/PopularPostsWidget';
+import { LiveStreamBanner } from './widgets/LiveStreamBanner';
 import RadioPlayer from './RadioPlayer';
 
 interface Props {
@@ -24,6 +25,7 @@ export function RightSidebar({ hasRadio, radioStreamUrl, hasAndroid, androidUrl,
 
   return (
     <aside style={{ width: '100%', minWidth: '300px' }}>
+      <LiveStreamBanner />
       <SearchWidget />
       <AnnouncementWidget text={announcement} />
       <ChannelStats />
