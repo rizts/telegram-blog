@@ -23,7 +23,26 @@ export async function syncAllPosts(channelId: string): Promise<number> {
 
   console.log(`[sync] Starting sync for channel: ${channelId}`);
 
-  await bot.startPolling();
+  const useWebhook = !!process.env.WEBHOOK_URL;
+
+  if (useWebhook) {
+    try {
+      await bot.deleteWebHook();
+      const webhookUrl = `${process.env.WEBHOOK_URL}/bot/${process.env.BOT_TOKEN}`;
+      await bot.setWebHook(webhookUrl);
+      console.log(`[sync] Telegram webhook registered at: ${webhookUrl}`);
+    } catch (err) {
+      console.error('[sync] Error setting up Telegram Webhook:', err);
+    }
+  } else {
+    try {
+      await bot.deleteWebHook();
+      await bot.startPolling();
+      console.log('[sync] Bot polling started (no WEBHOOK_URL configured)');
+    } catch (err) {
+      console.error('[sync] Error starting Telegram Bot polling:', err);
+    }
+  }
 
   // 1. Listen for new channel posts (Auto-save)
   bot.on('channel_post', async (msg) => {
@@ -178,4 +197,12 @@ async function upsertPost(post: any) {
 
 export async function stopSync() {
   await bot.stopPolling();
+}
+
+export function handleWebhookUpdate(update: any) {
+  try {
+    bot.processUpdate(update);
+  } catch (err) {
+    console.error('[sync] Error processing webhook update:', err);
+  }
 }

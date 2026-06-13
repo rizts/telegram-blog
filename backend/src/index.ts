@@ -3,7 +3,7 @@ import cors from '@fastify/cors';
 import 'dotenv/config';
 import postsRoutes from './routes/posts';
 import channelRoutes from './routes/channel';
-import { syncAllPosts } from './bot/sync';
+import { syncAllPosts, handleWebhookUpdate } from './bot/sync';
 
 const fastify = Fastify({ logger: true });
 
@@ -12,6 +12,18 @@ fastify.register(cors, {
 });
 
 fastify.get('/health', async () => ({ status: 'ok' }));
+
+// Telegram webhook handler
+fastify.post<{ Params: { token: string } }>('/bot/:token', async (request, reply) => {
+  const { token } = request.params;
+  if (token !== process.env.BOT_TOKEN) {
+    reply.status(401);
+    return { error: 'Unauthorized' };
+  }
+  handleWebhookUpdate(request.body);
+  return { ok: true };
+});
+
 fastify.register(postsRoutes, { prefix: '/posts' });
 fastify.register(channelRoutes, { prefix: '/channel' });
 
