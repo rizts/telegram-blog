@@ -16,7 +16,6 @@ export default async function Home({ searchParams }: PageProps) {
   const page = Math.max(1, parseInt(resolvedParams.page || '1'));
   const sort = resolvedParams.sort || 'newest';
   const tag = resolvedParams.tag || '';
-  const limit = 4;
 
   let data: PaginatedResponse | null = null;
   let errorMsg: string | null = null;
@@ -24,7 +23,6 @@ export default async function Home({ searchParams }: PageProps) {
   try {
     const query = new URLSearchParams({
       page: page.toString(),
-      limit: limit.toString(),
       ...(sort && { sort }),
       ...(tag && { tag }),
     });

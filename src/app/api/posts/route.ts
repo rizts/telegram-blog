@@ -7,8 +7,6 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const page = Math.max(1, parseInt(searchParams.get('page') ?? '1'));
-    const limit = Math.min(50, parseInt(searchParams.get('limit') ?? '10'));
-    const offset = (page - 1) * limit;
     const sortParam = searchParams.get('sort') ?? 'newest';
     const tagParam = searchParams.get('tag');
     const searchParam = searchParams.get('search');
@@ -18,6 +16,18 @@ export async function GET(request: Request) {
     const tagFilter = tagParam ? sql`${tagParam} = ANY(${posts.tags})` : sql`TRUE`;
     const searchFilter = searchParam ? sql`${posts.content} ILIKE ${`%${searchParam}%`}` : sql`TRUE`;
     const orderClause = sortParam === 'popular' ? desc(posts.views) : desc(posts.publishedAt);
+
+    // Check if there are matching sticky/pinned posts
+    const stickyCheck = await db
+      .select({ id: posts.id })
+      .from(posts)
+      .where(and(notDeleted, hasContentOrMedia, eq(posts.isSticky, true), tagFilter, searchFilter))
+      .limit(1);
+    const hasSticky = stickyCheck.length > 0;
+
+    const defaultLimit = hasSticky ? 4 : 10;
+    const limit = Math.min(50, parseInt(searchParams.get('limit') ?? defaultLimit.toString()));
+    const offset = (page - 1) * limit;
 
     const [stickyData, regularData, countResult] = await Promise.all([
       db
