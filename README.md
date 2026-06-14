@@ -20,32 +20,24 @@ This project has been fully migrated from a two-layer monorepo structure into a 
 
 ## Environment Variables (`.env`)
 
-Create a `.env` file in the root directory based on the `.env.example` file:
+Create a `.env` file in the root directory. You can copy `.env.example` as a template:
 
-```env
-# Database Configuration
-DATABASE_URL=your_neon_postgresql_connection_string
-
-# Telegram Configuration
-BOT_TOKEN=your_telegram_bot_token
-CHANNEL_USERNAME=@your_channel_username
-
-# Admin Setup
-ADMIN_SECRET=your_secure_random_string
-WEBHOOK_URL=https://your-domain.com
-
-# Next.js Frontend Configuration
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
-NEXT_PUBLIC_BLOG_TITLE="Radio Faedah Kita"
-NEXT_PUBLIC_BLOG_SUBTITLE="Saluran Informasi & Kajian"
-
-# Sidebar Extras (Instagram, YouTube, X, Facebook, Announcements)
-...
-```
+| Variable | Description | Example |
+| :--- | :--- | :--- |
+| `DATABASE_URL` | Neon Postgres Database Connection URI. | `postgresql://...` |
+| `BOT_TOKEN` | Telegram Bot Token from [@BotFather](https://t.me/BotFather). | `8713274923:AA...` |
+| `CHANNEL_USERNAME` | The username of your public Telegram channel (starts with `@`). | `@RuangFaedah_Kita` |
+| `ALLOW_FORWARD_SYNC` | Toggle (`true`/`false`) to allow historical message backfilling by forwarding to the bot's private chat. | `true` |
+| `ADMIN_SECRET` | Secure random string to authorize admin endpoints (sticky toggling/webhook setup). | `your-secure-secret` |
+| `WEBHOOK_URL` | Deployed URL of your website (used to register Telegram Webhook). | `https://your-domain.com` |
+| `CRON_SECRET` | Secret to secure automatic Vercel cron triggers. | `your-cron-secret` |
+| `NEXT_PUBLIC_API_URL` | The absolute URL pointing to your API routes. | `http://localhost:3000/api` |
+| `NEXT_PUBLIC_BLOG_TITLE` | Header brand title. | `"Radio Faedah Kita"` |
+| `NEXT_PUBLIC_BLOG_SUBTITLE` | Header brand subtitle. | `"Saluran Informasi & Kajian"` |
 
 ---
 
-## Getting Started
+## Local Development Setup
 
 ### 1. Install Dependencies
 ```bash
@@ -53,12 +45,12 @@ npm install
 ```
 
 ### 2. Generate and Run Database Migrations
-Generate SQL schema changes and push them to your database:
+Configure your `DATABASE_URL` in `.env`, then run:
 ```bash
-# Generate SQL
+# Generate SQL migration files
 npm run db:generate
 
-# Execute Migrations on Neon
+# Execute migrations to update DB schema
 npm run db:migrate
 ```
 
@@ -68,30 +60,66 @@ npm run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) to see the application.
 
----
-
-## Setup & Maintenance Endpoints
-
-### 1. Telegram Webhook Setup
-To register your app with Telegram to start receiving new posts, trigger the setup route once in your browser or curl:
-```
-GET http://localhost:3000/api/bot/setup?secret=<your_admin_secret>
-```
-
-### 2. Manual/Cron Sync Trigger
-To run deletion checking and sticky post updates periodically, set up a cron job pointing to:
-```
-GET http://localhost:3000/api/cron/sync
-Authorization: Bearer <your_admin_secret_or_cron_secret>
-```
-
----
-
-## Building and Running in Production
-
-To build the optimized Next.js production build:
+### 4. Running Tests
+We use Vitest for component and hook unit testing:
 ```bash
-npm run build
-npm start
+npm run test
 ```
-You can also run this using the included multi-stage `Dockerfile`.
+
+---
+
+## Webhook & Cron Setup (Serverless)
+
+### 1. Webhook Setup
+To register your app with Telegram to start receiving new posts, trigger the setup route once in your browser or curl after deployment:
+```
+GET https://<your-domain>/api/bot/setup?secret=<your_admin_secret>
+```
+*Note: This tells Telegram to send all channel update payloads directly to `https://<your-domain>/api/bot/<bot_token>`.*
+
+### 2. Deletions & Pinned Post Sync (Cron Job)
+To periodically check if posts were deleted or pinned directly on Telegram, set up a Cron Job pointing to:
+```
+GET https://<your-domain>/api/cron/sync
+Authorization: Bearer <your_cron_secret_or_admin_secret>
+```
+
+#### Vercel Cron Configuration (`vercel.json`)
+You can add a `vercel.json` file to the root directory to define the cron interval:
+```json
+{
+  "crons": [
+    {
+      "path": "/api/cron/sync",
+      "schedule": "*/5 * * * *"
+    }
+  ]
+}
+```
+
+---
+
+## Deployment Guides
+
+### 1. Deploying to Vercel (Recommended)
+1. Push your code to your GitHub/GitLab repository.
+2. Import the project into your Vercel Dashboard.
+3. Configure all Environment Variables in Vercel settings (do NOT prepend backend-only tokens with `NEXT_PUBLIC_` for security).
+4. Vercel will auto-detect Next.js and build it.
+5. Once deployed, run the **Webhook Setup** step above.
+
+### 2. Deploying via Docker (Self-Hosted Standalone)
+We use a multi-stage Docker build that generates a highly optimized standalone Next.js image:
+
+```bash
+# Build the Docker image
+docker build --build-arg NEXT_PUBLIC_API_URL=https://your-domain.com/api -t telegram-blog .
+
+# Run the container
+docker run -p 3000:3000 \
+  -e DATABASE_URL="your-db-url" \
+  -e BOT_TOKEN="your-bot-token" \
+  -e CHANNEL_USERNAME="@your-channel" \
+  -e ADMIN_SECRET="your-secret" \
+  telegram-blog
+```
